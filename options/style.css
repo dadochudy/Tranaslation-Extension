@@ -1,0 +1,38 @@
+#trex-list {
+  width: 50%;
+  margin: auto;
+  padding: 10px;
+  border: 1px solid black;
+  max-height: 600px;
+  overflow-y: scroll;
+}
+
+.delete-button {
+  color: #df8383;
+}
+
+#trex-list li {
+  display: flex;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  justify-content: space-between;
+  border-bottom: 1px solid black;
+}
+#trex-list li p {
+  width: 40%;
+}
+
+#trex-list li .target {
+  height: 100%;
+  position: relative;
+}
+
+#trex-list li .target::before {
+  content: "";
+  top: -50%;
+  left: -5px;
+  width: 1px;
+  height: 200%;
+  position: absolute;
+  background: black;
+}

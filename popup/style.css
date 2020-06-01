@@ -1,0 +1,14 @@
+.trex-wrapper {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+select {
+  width: 100px;
+}
+.trex-actions {
+  width: 100%;
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
