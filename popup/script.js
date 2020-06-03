@@ -49,6 +49,8 @@ $(function () {
         method: "setDictionary",
         data: { source, result },
       });
+      $("#trex-source").val("");
+      $("#trex-result").val("");
     }
   });
 

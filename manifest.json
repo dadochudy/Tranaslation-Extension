@@ -18,11 +18,12 @@
     "default_popup": "./popup/popup.html"
   },
   "background": {
+    "matches": ["<all_urls"],
     "scripts": ["background.js"],
     "persistent": false
   },
 
   "options_page": "./options/options.html",
   "web_accessible_resources": ["icons8-language-48.png"],
-  "permissions": ["storage", "notifications"]
+  "permissions": ["storage", "notifications", "tabs"]
 }

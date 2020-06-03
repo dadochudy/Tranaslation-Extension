@@ -15,9 +15,17 @@ chrome.runtime.onInstalled.addListener(function () {
         targetLanguage: { code: "sk", name: "Slovak" },
       };
       const dictionary = result.dictionary ? result.dictionary : [];
-      chrome.storage.sync.set({ options, dictionary });
+
+      chrome.storage.sync.set({
+        options,
+        dictionary,
+      });
     }
   });
+});
+
+chrome.storage.sync.set({
+  notification: { interval: false, correctIndex: null },
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -98,11 +106,37 @@ async function translate(data, sendResponse) {
   }
 }
 
-function show() {
-  chrome.storage.sync.get("dictionary", function (r) {
-    const word = r.dictionary[Math.floor(Math.random() * r.dictionary.length)];
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.url === undefined) {
+    chrome.storage.sync.get(["notification", "dictionary"], function (result) {
+      if (result.notification.interval && result.dictionary.length >= 2) {
+        chrome.storage.sync.set({
+          notification: { interval: false },
+        });
+        showQuizNotification();
+      }
+    });
+  }
+});
+
+setInterval(setNotificationInterval, 18000000);
+
+function setNotificationInterval() {
+  chrome.storage.sync.get("notification", function (result) {
+    if (result.notification.interval === false) {
+      chrome.storage.sync.set({
+        notification: { ...result.notification, interval: true },
+      });
+    }
+  });
+}
+
+function showQuizNotification() {
+  chrome.storage.sync.get("dictionary", function (result) {
+    const word =
+      result.dictionary[Math.floor(Math.random() * result.dictionary.length)];
     const badWord =
-      r.dictionary[Math.floor(Math.random() * r.dictionary.length)];
+      result.dictionary[Math.floor(Math.random() * result.dictionary.length)];
     let buttons, correctIndex;
     if (Math.round(Math.random())) {
       correctIndex = 0;
@@ -123,40 +157,42 @@ function show() {
         { title: word.result.data },
       ];
     }
-
-    let opt = {
-      iconUrl: "../icons8-language-48.png",
-      type: "basic",
-      title: "Translation-Extension",
-      message: "Quiz",
-      contextMessage: `Choose right answer for word: ${word.source.data}`,
-      buttons,
-    };
-    chrome.notifications.create(new Date().now, opt, callback);
-
-    chrome.notifications.onButtonClicked.addListener(function (buttonIndex) {
-      let opt;
-      if (buttonIndex === correctIndex) {
-        opt = {
-          iconUrl: "../icons8-language-48.png", // success img
-          type: "basic",
-          title: "Translation-Extension",
-          message: "Your answer was Correct!! Congratulations!",
-        };
-      } else {
-        opt = {
-          iconUrl: "../icons8-language-48.png", // wrong img
-          type: "basic",
-          title: "Translation-Extension",
-          message: "Your answer was Incorrect. :(",
-        };
-      }
-      chrome.notifications.create(new Date().now, opt, callback);
+    chrome.storage.sync.set({
+      notification: { interval: false, correctIndex },
     });
-
-    function callback() {
-      console.log("Last error:", chrome.runtime.lastError);
-    }
+    chrome.notifications.create(
+      new Date().now,
+      {
+        iconUrl: "../icons8-language-48.png",
+        type: "basic",
+        title: "Translation-Extension",
+        message: word.source.data,
+        contextMessage: "Choose right answer for word",
+        buttons,
+      },
+      callback
+    );
   });
 }
-setInterval(show, 600000);
+
+chrome.notifications.onButtonClicked.addListener(function (_, buttonIndex) {
+  chrome.storage.sync.get("notification", function (result) {
+    const opt = {
+      type: "basic",
+      title: "Translation-Extension",
+    };
+
+    if (buttonIndex === result.notification.correctIndex) {
+      opt.iconUrl = "../icons8-language-48.png";
+      opt.message = "Your answer was Correct!! Congratulations!";
+    } else {
+      opt.iconUrl = "../icons8-language-48.png";
+      opt.message = "Your answer was Incorrect. :(";
+    }
+    chrome.notifications.create(new Date().now, opt, callback);
+  });
+});
+
+function callback() {
+  console.log("Last error:", chrome.runtime.lastError);
+}
