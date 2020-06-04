@@ -32,7 +32,7 @@ $(function () {
             $("#translation-extension").mousedown(function (event) {
               chrome.runtime.sendMessage(
                 {
-                  method: "translate",
+                  method: "getTranslation",
                   data: {
                     source: selection,
                   },

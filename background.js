@@ -68,27 +68,33 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         );
         $("#" + deleteId).remove();
       }
-      if (message.method === "translate") {
+      if (message.method === "getTranslation") {
         data = {
           source: message.data.source,
           sourceLanguage: result.options.sourceLanguage,
           targetLanguage: result.options.targetLanguage,
         };
-        translated = translate(data, sendResponse);
+        chrome.tabs.query({ currentWindow: true, active: true }, function (
+          tabArray
+        ) {
+          translated = translate(data, sendResponse, tabArray[0].id);
+        });
       }
-      if (message.method === "getTranslation") {
-        if (typeof data !== "undefined") {
-          translate(data, sendResponse);
-        } else {
-          sendResponse(null);
-        }
+      if (message.method === "getTabTranslation") {
+        chrome.tabs.query({ currentWindow: true, active: true }, function (
+          tabArray
+        ) {
+          chrome.storage.sync.get("tabs", function (result) {
+            sendResponse(result.tabs[tabArray[0].id]);
+          });
+        });
       }
     }
   });
   return true;
 });
 
-async function translate(data, sendResponse) {
+async function translate(data, sendResponse, tabId) {
   const url =
     "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" +
     data.sourceLanguage.code +
@@ -100,6 +106,25 @@ async function translate(data, sendResponse) {
   const response = await fetch(url);
   const json = await response.json();
   try {
+    await chrome.storage.sync.get("tabs", function (result) {
+      chrome.storage.sync.set({
+        tabs: {
+          ...result.tabs,
+          [tabId]: {
+            source: {
+              code: data.sourceLanguage.code,
+              name: data.sourceLanguage.name,
+              data: data.source,
+            },
+            result: {
+              code: data.targetLanguage.code,
+              name: data.targetLanguage.name,
+              data: json[0][0][0],
+            },
+          },
+        },
+      });
+    });
     return sendResponse({ result: json[0][0][0], ...data });
   } catch (error) {
     return error.message;
@@ -196,3 +221,50 @@ chrome.notifications.onButtonClicked.addListener(function (_, buttonIndex) {
 function callback() {
   console.log("Last error:", chrome.runtime.lastError);
 }
+
+chrome.tabs.onCreated.addListener(function (tab) {
+  chrome.storage.sync.get("tabs", function (result) {
+    chrome.storage.sync.set({
+      tabs: {
+        ...result.tabs,
+        [tab.id]: {
+          source: {
+            code: null,
+            name: null,
+            data: null,
+          },
+          result: {
+            code: null,
+            name: null,
+            data: null,
+          },
+        },
+      },
+    });
+  });
+});
+chrome.tabs.onRemoved.addListener(function (tab) {
+  chrome.storage.sync.get("tabs", function (result) {
+    const { [tab.id]: value, ...rest } = result.tabs;
+    chrome.storage.sync.set({ tabs: { ...rest } });
+  });
+});
+
+chrome.tabs.query({ windowId: chrome.windows.WINDOW_ID_CURRENT }, (tabs) => {
+  const saveTabs = tabs.reduce(function (obj, item, index) {
+    obj[item.id] = {
+      source: {
+        code: null,
+        name: null,
+        data: null,
+      },
+      result: {
+        code: null,
+        name: null,
+        data: null,
+      },
+    };
+    return obj;
+  }, {});
+  chrome.storage.sync.set({ tabs: { ...saveTabs } });
+});

@@ -58,10 +58,12 @@ $(function () {
     chrome.runtime.openOptionsPage();
   });
 
-  chrome.runtime.sendMessage({ method: "getTranslation" }, function (response) {
-    if (response !== null) {
-      $("#trex-source").val(response.source);
-      $("#trex-result").val(response.result);
+  chrome.runtime.sendMessage({ method: "getTabTranslation" }, function (
+    response
+  ) {
+    if (response) {
+      $("#trex-source").val(response.source.data);
+      $("#trex-result").val(response.result.data);
     }
   });
 
