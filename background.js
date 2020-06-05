@@ -1,11 +1,11 @@
 /* 
-  TODO: - keep track of tabs and individual selection for tab to show in popup
-        - set primary language base on Chrome preferences 
+  TODO: - set primary language base on Chrome preferences 
         - set source language base of page locales
         - notifications...
         - keep track of notifications
         - send messages to re-render content and popup when options changes
  */
+const notificationInterval = 1800000; // 30minutes
 chrome.runtime.onInstalled.addListener(function () {
   chrome.storage.sync.get(["options", "dictionary"], function (result) {
     if (!result.options) {
@@ -132,7 +132,7 @@ async function translate(data, sendResponse, tabId) {
 }
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.url === undefined) {
+  if (changeInfo.status === "loading") {
     chrome.storage.sync.get(["notification", "dictionary"], function (result) {
       if (result.notification.interval && result.dictionary.length >= 2) {
         chrome.storage.sync.set({
@@ -144,7 +144,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   }
 });
 
-setInterval(setNotificationInterval, 18000000);
+setInterval(setNotificationInterval, notificationInterval);
 
 function setNotificationInterval() {
   chrome.storage.sync.get("notification", function (result) {
@@ -156,34 +156,43 @@ function setNotificationInterval() {
   });
 }
 
+function getRandomIndexOfArray(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function notificationButtons(word1, word2, index) {
+  return {
+    correctIndex: index,
+    buttons: [
+      {
+        title: word1.result.data,
+      },
+      {
+        title: word2.result.data,
+      },
+    ],
+  };
+}
+
 function showQuizNotification() {
   chrome.storage.sync.get("dictionary", function (result) {
-    const word =
-      result.dictionary[Math.floor(Math.random() * result.dictionary.length)];
-    const badWord =
-      result.dictionary[Math.floor(Math.random() * result.dictionary.length)];
-    let buttons, correctIndex;
+    const word = getRandomIndexOfArray(result.dictionary);
+    let badWord = getRandomIndexOfArray(result.dictionary);
+    if (badWord.result.data === word.result.data) {
+      do badWord = getRandomIndexOfArray(result.dictionary);
+      while (word.result.data === badWord.result.data);
+    }
+    let notificationQuiz;
     if (Math.round(Math.random())) {
-      correctIndex = 0;
-      buttons = [
-        {
-          title: word.result.data,
-        },
-        {
-          title: badWord.result.data,
-        },
-      ];
+      notificationQuiz = notificationButtons(word, badWord, 0);
     } else {
-      correctIndex = 1;
-      buttons = [
-        {
-          title: badWord.result.data,
-        },
-        { title: word.result.data },
-      ];
+      notificationQuiz = notificationButtons(badWord, word, 1);
     }
     chrome.storage.sync.set({
-      notification: { interval: false, correctIndex },
+      notification: {
+        interval: false,
+        correctIndex: notificationQuiz.correctIndex,
+      },
     });
     chrome.notifications.create(
       new Date().now,
@@ -193,7 +202,7 @@ function showQuizNotification() {
         title: "Translation-Extension",
         message: word.source.data,
         contextMessage: "Choose right answer for word",
-        buttons,
+        buttons: notificationQuiz.buttons,
       },
       callback
     );
@@ -206,7 +215,6 @@ chrome.notifications.onButtonClicked.addListener(function (_, buttonIndex) {
       type: "basic",
       title: "Translation-Extension",
     };
-
     if (buttonIndex === result.notification.correctIndex) {
       opt.iconUrl = "../icons8-language-48.png";
       opt.message = "Your answer was Correct!! Congratulations!";
