@@ -1,13 +1,17 @@
 $(function () {
-  for (lang in isoLangs) {
+  for (let lang in isoLangs) {
     $("#trex-source-language-select").append(
-      `<option value="${lang}">${isoLangs[lang].name}</option>`
+      `<input
+      type="radio"
+      value="${lang}"
+      id="${isoLangs[lang].name}"
+    /><label for="${isoLangs[lang].name}">${isoLangs[lang].name}</label>`
     );
   }
 
   chrome.runtime.sendMessage({ method: "getOptions" }, function (options) {
-    $("#trex-source-language-select").val(options.sourceLanguage.code);
-    $("#trex-result-language-label").text(
+    $(`#${options.sourceLanguage.name}`).prop("checked", true);
+    $("#trex-result-placeholder").text(
       isoLangs[options.targetLanguage.code].name
     );
   });
@@ -17,7 +21,7 @@ $(function () {
     if (source !== "") {
       chrome.runtime.sendMessage(
         {
-          method: "translate",
+          method: "getTranslation",
           data: { source },
         },
         function (response) {
@@ -27,18 +31,37 @@ $(function () {
     }
   });
 
-  $("#trex-source-language-select").change(() => {
-    const newSourceLangCode = $(this).find(":selected").val();
-    const newSourceLangName = $(this).find(":selected").text();
-    const options = {
-      sourceLanguage: { code: newSourceLangCode, name: newSourceLangName },
-    };
-    chrome.runtime.sendMessage({
-      method: "setOptions",
-      data: {
-        options,
-      },
-    });
+  $(document).click(function () {
+    if ($("#trex-source-language-select").hasClass("trex-expanded")) {
+      $("#trex-source-language-select").removeClass("trex-expanded");
+    }
+  });
+
+  $("#trex-source-language-select").click((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if ($("#trex-source-language-select").hasClass("trex-expanded")) {
+      $(this).find("input[type='radio']:checked").prop("checked", false);
+      $("#" + $(e.target).attr("for")).prop("checked", true);
+      const newSourceLangCode = $(
+        "#trex-source-language-select input[type='radio']:checked"
+      ).val();
+      const newSourceLangName = $(
+        " #trex-source-language-select input[type='radio']:checked"
+      ).attr("id");
+      const options = {
+        sourceLanguage: { code: newSourceLangCode, name: newSourceLangName },
+      };
+      chrome.runtime.sendMessage({
+        method: "setOptions",
+        data: {
+          options,
+        },
+      });
+    }
+    $("#trex-source-language-select").toggleClass("trex-expanded");
+
+    $("#trex-source-language-select").scrollTop(0);
   });
 
   $("#trex-save").click(() => {

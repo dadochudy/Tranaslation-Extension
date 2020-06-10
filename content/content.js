@@ -1,6 +1,4 @@
 $(function () {
-  // TODO: get page locale and send to background script Source Language
-
   function getSelected() {
     if (window.getSelection) {
       return window.getSelection().toString();
@@ -25,11 +23,15 @@ $(function () {
           let selection = getSelected().trim();
           if (selection != "") {
             removeIcon();
+            removeTranslatedTooltip();
             $("body").append(
               `<div id='translation-extension' style="position: absolute; left: ${event.clientX}px;
-        top:${event.clientY}px;"></div>`
+        top:${event.clientY}px;">
+          <div id='translation-extension-icon'></div>
+        </div>`
             );
-            $("#translation-extension").mousedown(function (event) {
+
+            $("#translation-extension-icon").mousedown(function (event) {
               chrome.runtime.sendMessage(
                 {
                   method: "getTranslation",
@@ -38,13 +40,17 @@ $(function () {
                   },
                 },
                 function (response) {
-                  $("#translation-extension-translated").append(
+                  $("#translation-extension").append(
                     `<div class="trex-wrapper">
                       <div id="trex-close">x</div>
-                      <label id="trex-result-language-label" for="trex-result">${response.sourceLanguage.name}</label>
-                      <input type="text" id="trex-source" value="${response.source}" />
-                      <label id="trex-result-language-label" for="trex-result">${response.targetLanguage.name}</label>
-                      <input type="text" id="trex-result" value="${response.result}" readonly />
+                      <div id="trex-source-input-wrapper">
+                        <input id="trex-source" type="text" value="${response.source}" />
+                        <span id="trex-source-placeholder">${response.sourceLanguage.name}</span>
+                      </div>
+                      <div id="trex-result-input-wrapper">
+                        <input id="trex-result" type="text" value="${response.result}" readonly />
+                        <span id="trex-result-placeholder">${response.targetLanguage.name}</span>
+                      </div>
                       <div class="trex-actions">
                         <div id="trex-save">Save to Dictionary</div>
                       </div>
@@ -68,10 +74,6 @@ $(function () {
                   });
                 }
               );
-              $("body").append(
-                `<div id='translation-extension-translated' style="position: absolute; left: ${event.clientX}px;
-                top:${event.clientY}px;"></div>`
-              );
             });
           } else {
             removeIcon();
@@ -88,9 +90,23 @@ $(function () {
   });
 
   function removeIcon() {
-    $("#translation-extension").remove();
+    $("#translation-extension-icon").remove();
   }
   function removeTranslatedTooltip() {
-    $("#translation-extension-translated").remove();
+    $("#translation-extension").remove();
   }
 });
+
+/* 
+TODO: for later maybe add page language detection
+get sentence with regex and get language with 
+i18n.detectLanguage()
+regex isn't working correctly
+$("body div ").filter(function () {
+  console.log(
+    $(this)
+      .text()
+      .match(/[A-Za-z\d][^\.!?]{20,70}[\.!?]/)
+  );
+})
+*/

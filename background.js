@@ -5,20 +5,35 @@
         - keep track of notifications
         - send messages to re-render content and popup when options changes
  */
-const notificationInterval = 1800000; // 30minutes
+
+const defaultLanguageCode = "en";
+const notificationInterval = 1800000; // 30 minutes
+
 chrome.runtime.onInstalled.addListener(function () {
   chrome.storage.sync.get(["options", "dictionary"], function (result) {
     if (!result.options) {
-      // TODO: get chrome language chrome.i18n.getAcceptLanguages() set as target
-      const options = {
-        sourceLanguage: { code: "en", name: "English" },
-        targetLanguage: { code: "sk", name: "Slovak" },
-      };
-      const dictionary = result.dictionary ? result.dictionary : [];
+      chrome.i18n.getAcceptLanguages(function (arr) {
+        const languageCode =
+          arr[0].length > 2 ? arr[0].substring(0, 2) : arr[0];
+        const targetLanguage = isoLangs[languageCode].name
+          ? {
+              code: languageCode,
+              name: isoLangs[languageCode].name,
+            }
+          : {
+              code: defaultLanguageCode,
+              name: isoLangs[defaultLanguageCode].name,
+            };
+        const options = {
+          sourceLanguage: { code: "en", name: "English" },
+          targetLanguage,
+        };
+        const dictionary = result.dictionary ? result.dictionary : [];
 
-      chrome.storage.sync.set({
-        options,
-        dictionary,
+        chrome.storage.sync.set({
+          options,
+          dictionary,
+        });
       });
     }
   });

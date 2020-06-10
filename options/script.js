@@ -24,7 +24,7 @@ $(function () {
 
   chrome.runtime.sendMessage({ method: "getOptions" }, function (options) {
     if (options) {
-      for (lang in isoLangs) {
+      for (let lang in isoLangs) {
         $("#trex-target-language-select").append(`
           <option value="${lang}">${isoLangs[lang].name}</option>
         `);
@@ -52,7 +52,7 @@ $(function () {
       });
     }
 
-    for (lang in isoLangs) {
+    for (let lang in isoLangs) {
       $("#trex-target-language-select").append(
         `<option value="${lang}">${isoLangs[lang].name}</option>`
       );

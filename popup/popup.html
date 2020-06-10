@@ -11,16 +11,22 @@
   </head>
   <body>
     <div class="trex-wrapper">
-    <select name="language" id="trex-source-language-select">
-    </select>
-    <input type="text" id="trex-source" />
-    <label id="trex-result-language-label" for="trex-result"></label>
-    <input type="text" id="trex-result" value="" readonly />
-    <div class="trex-actions">
-    <button id="trex-translate">Translate</button>
-    <button id="trex-save">Save to Dictionary</button>
-    </div>
-    <button id="trex-open-dictionary">Show Dictionary</button
+      <div id="trex-source-language-select-wrapper">
+        <div id="trex-source-language-select"></div>
+      </div>
+      <div id="trex-source-input-wrapper">
+        <input id="trex-source" type="text" placeholder=" " />
+        <span id="trex-source-placeholder">Translate</span>
+      </div>
+      <div id="trex-result-input-wrapper">
+        <input id="trex-result" type="text" placeholder=" " readonly />
+        <span id="trex-result-placeholder"></span>
+      </div>
+      <div class="trex-actions">
+        <button id="trex-translate">Translate</button>
+        <button id="trex-save">Save to Dictionary</button>
+      </div>
+      <button id="trex-open-dictionary">Show Dictionary</button>
     </div>
   </body>
 </html>
