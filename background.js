@@ -1,9 +1,8 @@
 /* 
-  TODO: - set primary language base on Chrome preferences 
+  TODO:
         - set source language base of page locales
         - notifications...
         - keep track of notifications
-        - send messages to re-render content and popup when options changes
  */
 
 const defaultLanguageCode = "en";

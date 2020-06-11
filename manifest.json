@@ -19,7 +19,7 @@
   },
   "background": {
     "matches": ["<all_urls"],
-    "scripts": ["background.js", "./misc/languages.js"],
+    "scripts": ["background.js"],
     "persistent": false
   },
 

@@ -1,38 +1,188 @@
-#trex-list {
-  width: 50%;
-  margin: auto;
-  padding: 10px;
-  border: 1px solid black;
-  max-height: 600px;
-  overflow-y: scroll;
-}
+/* 
+  Inspired from 
+  Settings - Daily UI 007
+  by Dillon Morris
+  https://dribbble.com/shots/4290939-Settings-Daily-UI-007
+*/
 
-.delete-button {
-  color: #df8383;
-}
-
-#trex-list li {
-  display: flex;
-  margin-bottom: 5px;
-  padding-bottom: 5px;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-}
-#trex-list li p {
-  width: 40%;
-}
-
-#trex-list li .target {
+body,
+html {
   height: 100%;
+}
+h2 {
+  font-weight: bolder;
+  color: #898dbf;
+}
+
+form {
+  width: 550px;
+}
+
+form * {
+  font-weight: bold;
+}
+
+form label {
+  font-size: 18px;
+  color: #8f9096;
+}
+
+form .form-control,
+form .form-control:focus {
+  border-color: transparent;
+  border-bottom-color: #bebcc1;
+  box-shadow: none;
+}
+
+form .btn {
+  border-radius: 0px;
+  border-color: transparent;
+}
+
+.btn.btn-default {
+  background: #ebebeb;
+  color: #8f9096;
+}
+
+.btn.btn-primary {
+  background: #6c63ff;
+  color: white;
+}
+.sidebar {
+  height: 100vh !important;
+  bottom: 0;
+  padding-left: 20px;
+  font-size: 1.3rem;
+  background: #6c63ff;
+}
+
+@media screen and (max-width: 940px) {
+  .sidebar {
+    font-size: 1rem;
+    padding-left: 0px;
+  }
+}
+
+.sidebar .nav-link {
+  margin-bottom: 20px;
+  color: #dddce5;
+}
+
+.nav-link.active {
+  color: #fff;
+}
+
+.main > .row {
+  height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    padding-left: 50px;
+    width: 100%;
+    padding-top: 200px;
+    padding-bottom: 50px;
+  }
+
+  form {
+    width: 100%;
+    margin: auto;
+  }
+}
+
+#trex-source-language-select-wrapper {
+  top: 5px;
+  width: 70%;
+  height: 26px;
+  position: absolute;
+}
+
+#trex-source-language-select {
+  width: 100%;
+  height: 26px;
+  color: #444;
+  outline: none;
+  z-index: 1000;
+  cursor: pointer;
+  overflow: hidden;
+  text-align: left;
+  border-radius: 13px;
+  position: relative;
+  white-space: nowrap;
+  display: inline-block;
+  background-color: #cde4f5;
+  border: 1px solid transparent;
+  transition: 0.3s all ease-in-out;
+}
+#trex-source-language-select input:focus + label {
+  background: #def;
+}
+#trex-source-language-select input {
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+  position: absolute;
+  display: inline-block;
+}
+#trex-source-language-select label {
+  height: 26px;
+  display: block;
+  cursor: pointer;
+  line-height: 26px;
+  padding-left: 13px;
+  padding-right: 39px;
+  position: relative;
+  border-top: 1px solid #d9d9d9;
+  transition: 0.3s color ease-in-out;
+}
+#trex-source-language-select label:nth-child(2) {
+  margin-top: 26px;
+  border-top: 1px solid #d9d9d9;
+}
+#trex-source-language-select input:checked + label {
+  top: 0;
+  width: 100%;
+  display: block;
+  border-top: none;
+  position: absolute;
+}
+#trex-source-language-select input:checked + label:nth-child(2) {
+  margin-top: 0;
   position: relative;
 }
-
-#trex-list li .target::before {
+#trex-source-language-select::after {
+  top: 11px;
   content: "";
-  top: -50%;
-  left: -5px;
-  width: 1px;
-  height: 200%;
+  right: 10px;
   position: absolute;
-  background: black;
+  border: 0.39px solid #3694d7;
+  border-color: #3694d7 transparent transparent transparent;
+  transition: 0.4s all ease-in-out;
+}
+#trex-source-language-select.trex-expanded {
+  padding: 0;
+  height: 195px;
+  background: #fff;
+  overflow-y: scroll;
+  border-radius: 3px;
+  border: 1px solid #3694d7;
+  box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 5px 0px;
+}
+#trex-source-language-select.trex-expanded label {
+  border-top: 1px solid #d9d9d9;
+}
+#trex-source-language-select.trex-expanded label:hover {
+  color: #3694d7;
+}
+#trex-source-language-select.trex-expanded input:checked + label {
+  color: #3694d7;
+}
+#trex-source-language-select.trex-expanded::after {
+  top: 8px;
+  transform: rotate(-180deg);
+}
+
+.list-group {
+  max-height: 500px;
+  overflow-y: scroll;
 }

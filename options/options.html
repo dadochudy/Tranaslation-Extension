@@ -7,16 +7,72 @@
     <script src="../jquery-3.5.1.min.js"></script>
     <script src="../misc/languages.js"></script>
     <script src="script.js"></script>
+    <script src="../bootstrap-4.5.0-dist/js/bootstrap.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="../bootstrap-4.5.0-dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="../misc/fontello-538a03d2/css/fontello-codes.css" />
+    <link rel="stylesheet" href="../misc/fontello-538a03d2/css/fontello-embedded.css" />
+    <link rel="stylesheet" href="../misc/fontello-538a03d2/css/fontello.css" />
     <link rel="stylesheet" href="style.css" />
-    <title>Document</title>
+    <title>Options Vocabuilder</title>
   </head>
   <body>
-    <h1>Translation Extensions Options and Dictionary</h1>
+    <div class="container-fluid main" style="height: 100vh; padding-left: 0px;">
+      <div class="row align-items-center" style="height: 100%;">
+        <div class="col-md-3 d-none d-md-block" style="height: 100%;">
+          <div
+            class="container-fluid nav sidebar flex-column d-flex justify-content-center"
+          >
+            <a href="#" class="nav-link active">
+              <i class="icon-cog-alt"></i> General</a
+            >
+          </div>
+        </div>
 
-    <h3>Select default language to translate</h3>
-    <select name="language" id="trex-target-language-select"> </select>
+        <div class="col-md-9 mb-auto">
+          <div class="container content clear-fix ">
+            <h2 class="mt-5 mb-5">General Settings</h2>
 
-    <h3>Dictionary</h3>
-    <ul id="trex-list"></ul>
+              <div class="col-md-9">
+                <div class="container">
+                  <form>
+                    <div class="form-group">
+                      <label for="fullName">Select default language</label>
+                      <div id="trex-source-language-select-wrapper">
+                        <div id="trex-source-language-select"></div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="email">Dictionary</label>
+
+  <ul id="trex-list" class="list-group">
+  </ul>
+                    </div>
+
+                    <div class="row mt-5">
+                      <div class="col">
+                        <button type="button" class="btn btn-primary btn-block">
+                          Save Changes
+                        </button>
+                      </div>
+
+                      <div class="col">
+                        <button type="button" class="btn btn-default btn-block">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
